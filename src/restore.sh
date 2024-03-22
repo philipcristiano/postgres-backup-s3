@@ -1,6 +1,6 @@
 #! /bin/sh
 
-set -ue
+set -uxe
 set -o pipefail
 
 source ./env.sh
@@ -31,7 +31,9 @@ aws $aws_args s3 cp "${s3_uri_base}/${key_suffix}" "db${file_type}"
 
 if [ -n "$PASSPHRASE" ]; then
   echo "Decrypting backup..."
+  set +x
   gpg --decrypt --batch --passphrase "$PASSPHRASE" db.dump.gpg > db.dump
+  set -x
   rm db.dump.gpg
 fi
 
