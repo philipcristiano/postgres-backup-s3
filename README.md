@@ -85,3 +85,5 @@ These changes would have been difficult or impossible merge into @schickling's r
   - support encrypted (password-protected) backups
   - support for restoring from a specific backup by timestamp
   - support for auto-removal of old backups
+
+# DROP
