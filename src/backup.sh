@@ -21,7 +21,6 @@ backup_to_file()
   s3_uri_base=$1
   if [ -n "$PASSPHRASE" ]; then
     echo "Encrypting backup..."
-    rm -f db.dump.gpg
     gpg --symmetric --batch --passphrase "$PASSPHRASE" db.dump
     rm db.dump
     local_file="db.dump.gpg"
@@ -33,7 +32,6 @@ backup_to_file()
 
   echo "Uploading backup to $S3_BUCKET..."
   aws $aws_args s3 cp "$local_file" "$s3_uri"
-  rm "$local_file"
 
   echo "Backup complete."
 }
