@@ -19,6 +19,7 @@ pg_dump --format=custom \
 backup_to_file()
 {
   s3_uri_base=$1
+  metadata=$2
   if [ -n "$PASSPHRASE" ]; then
     echo "Encrypting backup..."
     gpg --symmetric --batch --passphrase "$PASSPHRASE" db.dump
@@ -31,16 +32,16 @@ backup_to_file()
   fi
 
   echo "Uploading backup to $S3_BUCKET..."
-  aws $aws_args s3 cp "$local_file" "$s3_uri"
+  aws $aws_args s3 cp "$local_file" "$s3_uri" --metadata="${metadata}"
 
   echo "Backup complete."
 }
 
 timestamp=$(date +"%Y-%m-%dT%H:%M:%S")
-backup_each="s3://${S3_BUCKET}/${S3_PREFIX}/each/${POSTGRES_DATABASE}_${timestamp}.dump"
+backup_each="s3://${S3_BUCKET}/${S3_PREFIX}/${POSTGRES_DATABASE}_${timestamp}.dump"
 
 timestamp=$(date +"%Y-%m-%d")
-backup_daily="s3://${S3_BUCKET}/${S3_PREFIX}/daily/${POSTGRES_DATABASE}_${timestamp}.dump"
+backup_daily="s3://${S3_BUCKET}/${S3_PREFIX}/${POSTGRES_DATABASE}_${timestamp}.dump"
 
-backup_to_file $backup_each
-backup_to_file $backup_daily
+backup_to_file $backup_each "backup_type=each"
+backup_to_file $backup_daily "backup_type=daily"
