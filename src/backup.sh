@@ -43,7 +43,7 @@ backup_each="s3://${S3_BUCKET}/${backup_each_f}"
 
 timestamp=$(date +"%Y-%m-%d")
 backup_daily_f="${S3_PREFIX}/${POSTGRES_DATABASE}_${timestamp}.dump"
-backup_daily="s3://${S3_BUCKET}/{$backup_daily_f}"
+backup_daily="s3://${S3_BUCKET}/${backup_daily_f}"
 
 backup_to_file $backup_each "backup_type=each"
 backup_to_file $backup_daily "backup_type=daily"
