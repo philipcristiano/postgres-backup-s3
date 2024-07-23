@@ -38,10 +38,15 @@ backup_to_file()
 }
 
 timestamp=$(date +"%Y-%m-%dT%H:%M:%S")
-backup_each="s3://${S3_BUCKET}/${S3_PREFIX}/${POSTGRES_DATABASE}_${timestamp}.dump"
+backup_each_f="${S3_PREFIX}/${POSTGRES_DATABASE}_${timestamp}.dump"
+backup_each="s3://${S3_BUCKET}/${backup_each_f}"
 
 timestamp=$(date +"%Y-%m-%d")
-backup_daily="s3://${S3_BUCKET}/${S3_PREFIX}/${POSTGRES_DATABASE}_${timestamp}.dump"
+backup_daily_f="${S3_PREFIX}/${POSTGRES_DATABASE}_${timestamp}.dump"
+backup_daily="s3://${S3_BUCKET}/{$backup_daily_f}"
 
 backup_to_file $backup_each "backup_type=each"
 backup_to_file $backup_daily "backup_type=daily"
+
+aws s3api put-object-tagging --bucket "s3://${S3_BUCKET}" --key "${backup_daily_f}" --tagging 'TagSet=[{Key=backup-type,Value=daily}]'
+aws s3api put-object-tagging --bucket "s3://${S3_BUCKET}" --key "${backup_each_f}" --tagging 'TagSet=[{Key=backup-type,Value=each}]'
